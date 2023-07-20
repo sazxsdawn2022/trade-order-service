@@ -1,0 +1,11 @@
+info:
+  app:
+    name: trade-order-gateway
+    env: local
+    ver: v0.0.1
+
+server:
+  port: 8088
+
+actions: http://campus.query1.ksyun.com:8089,http://campus.query2.ksyun.com:8089
+meta: http://campus.meta.ksyun.com:8090
