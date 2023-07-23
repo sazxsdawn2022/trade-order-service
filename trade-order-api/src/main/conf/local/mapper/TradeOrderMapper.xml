@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ksyun.trade.mapper.TradeOrderMapper">
+
+    <!-- 定义查询结果映射 -->
+    <resultMap id="BaseResultMap" type="com.ksyun.trade.pojo.TradeOrder">
+        <id column="id" property="id" />
+        <result column="user_id" property="userId" />
+        <result column="region_id" property="regionId" />
+        <result column="product_id" property="productId" />
+        <result column="price_value" property="priceValue" />
+        <result column="create_time" property="createTime" />
+    </resultMap>
+
+    <!--&lt;!&ndash; 插入一条数据 &ndash;&gt;-->
+    <!--<insert id="insert" parameterType="com.ksyun.trade.pojo.TradeOrder" useGeneratedKeys="true" keyProperty="id">-->
+    <!--    INSERT INTO ksc_trade_order (user_id, region_id, product_id, price_value, create_time)-->
+    <!--    VALUES (#{userId},#{regionId},#{productId},#{priceValue},#{createTime})-->
+    <!--</insert>-->
+
+    <!--&lt;!&ndash; 根据ID查询数据 &ndash;&gt;-->
+    <!--<select id="selectById" resultMap="BaseResultMap" parameterType="int">-->
+    <!--    SELECT id, user_id, region_id, product_id, price_value, create_time-->
+    <!--    FROM ksc_trade_order-->
+    <!--    WHERE id = #{id}-->
+    <!--</select>-->
+
+    <!--&lt;!&ndash; 根据条件查询数据 &ndash;&gt;-->
+    <!--<select id="selectByCondition" resultMap="BaseResultMap" parameterType="com.ksyun.trade.pojo.TradeOrder">-->
+    <!--    SELECT id, user_id, region_id, product_id, price_value, create_time-->
+    <!--    FROM ksc_trade_order-->
+    <!--    WHERE 1=1-->
+    <!--    <if test="userId != null">-->
+    <!--        AND user_id = #{userId}-->
+    <!--    </if>-->
+    <!--    <if test="regionId != null">-->
+    <!--        AND region_id = #{regionId}-->
+    <!--    </if>-->
+    <!--    <if test="productId != null">-->
+    <!--        AND product_id = #{productId}-->
+    <!--    </if>-->
+    <!--    <if test="priceValue != null">-->
+    <!--        AND price_value = #{priceValue}-->
+    <!--    </if>-->
+    <!--    <if test="createTime != null">-->
+    <!--        AND create_time = #{createTime}-->
+    <!--    </if>-->
+    <!--</select>-->
+
+    <!--&lt;!&ndash; 更新数据 &ndash;&gt;-->
+    <!--<update id="update" parameterType="com.ksyun.trade.pojo.TradeOrder">-->
+    <!--    UPDATE ksc_trade_order-->
+    <!--    SET user_id = #{userId},-->
+    <!--        region_id = #{regionId},-->
+    <!--        product_id = #{productId},-->
+    <!--        price_value = #{priceValue},-->
+    <!--        create_time = #{createTime}-->
+    <!--    WHERE id = #{id}-->
+    <!--</update>-->
+
+    <!--&lt;!&ndash; 根据ID删除数据 &ndash;&gt;-->
+    <!--<delete id="deleteById" parameterType="int">-->
+    <!--    DELETE FROM ksc_trade_order-->
+    <!--    WHERE id = #{id}-->
+    <!--</delete>-->
+
+</mapper>

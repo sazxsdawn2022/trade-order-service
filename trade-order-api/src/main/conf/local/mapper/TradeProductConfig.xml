@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ksyun.trade.mapper.TradeProductConfigMapper">
+
+    <!-- 定义查询结果映射 -->
+    <resultMap id="BaseResultMap" type="com.ksyun.trade.pojo.TradeProductConfig">
+        <id column="id" property="id" />
+        <result column="item_no" property="itemNo" />
+        <result column="item_name" property="itemName" />
+        <result column="unit" property="unit" />
+        <result column="value" property="value" />
+        <result column="order_id" property="orderId" />
+    </resultMap>
+
+    <!--&lt;!&ndash; 插入一条数据 &ndash;&gt;-->
+    <!--<insert id="insert" parameterType="com.ksyun.trade.pojo.TradeProductConfig" useGeneratedKeys="true" keyProperty="id">-->
+    <!--    INSERT INTO ksc_trade_product_config (item_no, item_name, unit, value, order_id)-->
+    <!--    VALUES (#{itemNo},#{itemName},#{unit},#{value},#{orderId})-->
+    <!--</insert>-->
+
+    <!--&lt;!&ndash; 根据ID查询数据 &ndash;&gt;-->
+    <!--<select id="selectById" resultMap="BaseResultMap" parameterType="int">-->
+    <!--    SELECT id, item_no, item_name, unit, value, order_id-->
+    <!--    FROM ksc_trade_product_config-->
+    <!--    WHERE id = #{id}-->
+    <!--</select>-->
+
+    <!--&lt;!&ndash; 根据条件查询数据 &ndash;&gt;-->
+    <!--<select id="selectByCondition" resultMap="BaseResultMap" parameterType="com.ksyun.trade.pojo.TradeProductConfig">-->
+    <!--    SELECT id, item_no, item_name, unit, value, order_id-->
+    <!--    FROM ksc_trade_product_config-->
+    <!--    WHERE 1=1-->
+    <!--    <if test="itemNo != null">-->
+    <!--        AND item_no = #{itemNo}-->
+    <!--    </if>-->
+    <!--    <if test="itemName != null">-->
+    <!--        AND item_name = #{itemName}-->
+    <!--    </if>-->
+    <!--    <if test="unit != null">-->
+    <!--        AND unit = #{unit}-->
+    <!--    </if>-->
+    <!--    <if test="value != null">-->
+    <!--        AND value = #{value}-->
+    <!--    </if>-->
+    <!--    <if test="orderId != null">-->
+    <!--        AND order_id = #{orderId}-->
+    <!--    </if>-->
+    <!--</select>-->
+
+    <!--&lt;!&ndash; 更新数据 &ndash;&gt;-->
+    <!--<update id="update" parameterType="com.ksyun.trade.pojo.TradeProductConfig">-->
+    <!--    UPDATE ksc_trade_product_config-->
+    <!--    SET item_no = #{itemNo},-->
+    <!--        item_name = #{itemName},-->
+    <!--        unit = #{unit},-->
+    <!--        value = #{value},-->
+    <!--        order_id = #{orderId}-->
+    <!--    WHERE id = #{id}-->
+    <!--</update>-->
+
+    <!--&lt;!&ndash; 根据ID删除数据 &ndash;&gt;-->
+    <!--<delete id="deleteById" parameterType="int">-->
+    <!--    DELETE FROM ksc_trade_product_config-->
+    <!--    WHERE id = #{id}-->
+    <!--</delete>-->
+
+</mapper>

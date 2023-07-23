@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ksyun.trade.mapper.VoucherDeductMapper">
+
+    <!-- 定义查询结果映射 -->
+    <resultMap id="BaseResultMap" type="com.ksyun.trade.pojo.VoucherDeduct">
+        <id column="id" property="id" />
+        <result column="order_id" property="orderId" />
+        <result column="voucher_no" property="voucherNo" />
+        <result column="amount" property="amount" />
+        <result column="before_deduct_amount" property="beforeDeductAmount" />
+        <result column="after_deduct_amount" property="afterDeductAmount" />
+        <result column="create_time" property="createTime" />
+        <result column="update_time" property="updateTime" />
+    </resultMap>
+
+    <!--&lt;!&ndash; 插入一条数据 &ndash;&gt;-->
+    <!--<insert id="insert" parameterType="com.ksyun.trade.pojo.VoucherDeduct" useGeneratedKeys="true" keyProperty="id">-->
+    <!--    INSERT INTO voucher_deduct (order_id, voucher_no, amount, before_deduct_amount, after_deduct_amount, create_time, update_time)-->
+    <!--    VALUES (#{orderId},#{voucherNo},#{amount},#{beforeDeductAmount},#{afterDeductAmount},#{createTime},#{updateTime})-->
+    <!--</insert>-->
+
+    <!--&lt;!&ndash; 根据ID查询数据 &ndash;&gt;-->
+    <!--<select id="selectById" resultMap="BaseResultMap" parameterType="int">-->
+    <!--    SELECT id, order_id, voucher_no, amount, before_deduct_amount, after_deduct_amount, create_time, update_time-->
+    <!--    FROM voucher_deduct-->
+    <!--    WHERE id = #{id}-->
+    <!--</select>-->
+
+    <!--&lt;!&ndash; 根据条件查询数据 &ndash;&gt;-->
+    <!--<select id="selectByCondition" resultMap="BaseResultMap" parameterType="com.ksyun.trade.pojo.VoucherDeduct">-->
+    <!--    SELECT id, order_id, voucher_no, amount, before_deduct_amount, after_deduct_amount, create_time, update_time-->
+    <!--    FROM voucher_deduct-->
+    <!--    WHERE 1=1-->
+    <!--    <if test="orderId != null">-->
+    <!--        AND order_id = #{orderId}-->
+    <!--    </if>-->
+    <!--    <if test="voucherNo != null">-->
+    <!--        AND voucher_no = #{voucherNo}-->
+    <!--    </if>-->
+    <!--    <if test="amount != null">-->
+    <!--        AND amount = #{amount}-->
+    <!--    </if>-->
+    <!--    <if test="beforeDeductAmount != null">-->
+    <!--        AND before_deduct_amount = #{beforeDeductAmount}-->
+    <!--    </if>-->
+    <!--    <if test="afterDeductAmount != null">-->
+    <!--        AND after_deduct_amount = #{afterDeductAmount}-->
+    <!--    </if>-->
+    <!--    <if test="createTime != null">-->
+    <!--        AND create_time = #{createTime}-->
+    <!--    </if>-->
+    <!--    <if test="updateTime != null">-->
+    <!--        AND update_time = #{updateTime}-->
+    <!--    </if>-->
+    <!--</select>-->
+
+    <!--&lt;!&ndash; 更新数据 &ndash;&gt;-->
+    <!--<update id="update" parameterType="com.ksyun.trade.pojo.VoucherDeduct">-->
+    <!--    UPDATE voucher_deduct-->
+    <!--    SET order_id = #{orderId},-->
+    <!--        voucher_no = #{voucherNo},-->
+    <!--        amount = #{amount},-->
+    <!--        before_deduct_amount = #{beforeDeductAmount},-->
+    <!--        after_deduct_amount = #{afterDeductAmount},-->
+    <!--        create_time = #{createTime},-->
+    <!--        update_time = #{updateTime}-->
+    <!--    WHERE id = #{id}-->
+    <!--</update>-->
+
+    <!--&lt;!&ndash; 根据ID删除数据 &ndash;&gt;-->
+    <!--<delete id="deleteById" parameterType="int">-->
+    <!--    DELETE FROM voucher_deduct-->
+    <!--    WHERE id = #{id}-->
+    <!--</delete>-->
+
+</mapper>
