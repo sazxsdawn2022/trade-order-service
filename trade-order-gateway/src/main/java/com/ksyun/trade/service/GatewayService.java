@@ -1,11 +1,14 @@
 package com.ksyun.trade.service;
 
+import com.ksyun.trade.dto.TradeResultDTO;
 import com.ksyun.trade.rest.RestResult;
 import com.sun.webkit.network.URLs;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Controller;
 import org.springframework.stereotype.Service;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.client.RestTemplate;
 
@@ -15,6 +18,8 @@ import java.util.Collections;
 import java.util.Enumeration;
 import java.util.Map;
 import java.util.Random;
+
+import static sun.plugin2.util.PojoUtil.toJson;
 
 @Service
 public class GatewayService {
@@ -30,9 +35,9 @@ public class GatewayService {
 
         String paramName = "";
 
-        // 1. 模拟路由 (负载均衡) 获取接口
+        // 1. 模拟路由 (轮询) 获取接口
         URLs = urls.split(",");
-        String desHost = random();
+        String desHost = round();
         String requestURI = request.getRequestURI();  //  /online/queryRegionName
         //获取url参数名
         Enumeration<String> parameterNames = request.getParameterNames();
@@ -49,18 +54,57 @@ public class GatewayService {
             targetUrl = desHost + requestURI + "?" + paramName + "=" + param;
         }
 
+
+
+
         // 2. 请求转发
 
         //构建RestTemplate
         HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        HttpEntity<String> requestEntity = new HttpEntity<>(headers);
-        ResponseEntity<String> responseEntity = restTemplate.exchange(targetUrl, HttpMethod.GET, requestEntity, String.class);
 
-        //返回响应体
-        String body = responseEntity.getBody();
-        return body;
+        //获得upstream带到api模块用
+        String upstream = subUpstream(desHost);
+//        System.out.println("upstream gateway中的= " + upstream);
+        //添加upstream
+        MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+        params.add("upstream", upstream);
+
+
+
+
+        //区分开来，如果是/online/queryOrderInfo请求则带上upstream发POST请求，否则不带upstream发GET请求
+        if(requestURI.contains("queryOrderInfo")){
+            headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+            headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
+            HttpEntity<MultiValueMap<String, String>> requestEntity = new HttpEntity<>(params, headers);
+            ResponseEntity<TradeResultDTO> responseEntity = restTemplate.exchange(targetUrl, HttpMethod.POST, requestEntity, TradeResultDTO.class);
+            TradeResultDTO body = responseEntity.getBody();
+            return RestResult.success().data(body);
+
+        } else {
+            headers.setContentType(MediaType.APPLICATION_JSON);
+            HttpEntity<MultiValueMap<String, String>> requestEntity = new HttpEntity<>(headers);
+            ResponseEntity responseEntity = restTemplate.exchange(targetUrl, HttpMethod.POST, requestEntity, String.class);
+            return null;
+        }
+
+
+
+
+
+
+
     }
+
+
+    //获得upstream
+    public String subUpstream(String hostStr){
+        int startIndex = hostStr.indexOf("//") + 2;
+        int endIndex = hostStr.indexOf(":", startIndex);
+        String subStr = hostStr.substring(startIndex, endIndex);
+        return subStr;
+    }
+
 
 
 

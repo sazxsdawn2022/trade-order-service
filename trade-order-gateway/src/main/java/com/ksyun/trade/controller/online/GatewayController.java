@@ -18,10 +18,10 @@ public class GatewayController {
     /**
      * 查询订单详情 (GET)
      */
-//    @RequestMapping(value = "/online/queryOrderInfo", produces = "application/json")
-//    public Object queryOrderInfo(@RequestParam(value = "id") Integer id) {
-//        return gatewayService.loadLalancing(id);
-//    }
+    @RequestMapping(value = "/online/queryOrderInfo", produces = "application/json")
+    public Object queryOrderInfo(@RequestParam(value = "id") Integer id, HttpServletRequest request) {
+        return gatewayService.loadLalancing(id, request);
+    }
 
     /**
      * 根据机房Id查询机房名称 (GET)

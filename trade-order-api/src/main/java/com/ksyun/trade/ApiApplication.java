@@ -6,6 +6,9 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.retry.annotation.EnableRetry;
 import org.springframework.scheduling.annotation.EnableAsync;
 
+import java.net.URL;
+import java.net.URLClassLoader;
+
 @SpringBootApplication
 @EnableAsync(proxyTargetClass = true)
 @EnableRetry
