@@ -85,7 +85,9 @@ public class GatewayService {
             headers.setContentType(MediaType.APPLICATION_JSON);
             HttpEntity<MultiValueMap<String, String>> requestEntity = new HttpEntity<>(headers);
             ResponseEntity responseEntity = restTemplate.exchange(targetUrl, HttpMethod.POST, requestEntity, String.class);
-            return null;
+            Object body = responseEntity.getBody();
+
+            return RestResult.success().data(body);
         }
 
 

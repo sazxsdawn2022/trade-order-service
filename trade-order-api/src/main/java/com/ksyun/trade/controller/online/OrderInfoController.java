@@ -8,7 +8,6 @@ import com.ksyun.trade.dto.TradeResultDTO;
 import com.ksyun.trade.dto.UserDTO;
 import com.ksyun.trade.pojo.TradeOrder;
 import com.ksyun.trade.pojo.TradeProductConfig;
-import com.ksyun.trade.rest.RestResult;
 import com.ksyun.trade.service.TradeOrderService;
 import com.ksyun.trade.service.TradeProductConfigService;
 import com.ksyun.trade.util.PinyinUtils;
@@ -60,7 +59,7 @@ public class OrderInfoController {
         HttpEntity<String> requestEntity = new HttpEntity<>(headers);
         ResponseEntity<String> userResponseEntity = restTemplate.exchange(targetUrl, HttpMethod.GET, requestEntity, String.class);
         String userResponseEntityBody = userResponseEntity.getBody();
-        System.out.println("userResponseEntityBody = " + userResponseEntityBody);
+//        System.out.println("userResponseEntityBody = " + userResponseEntityBody);
 
 
         //获得userDTO
@@ -68,7 +67,7 @@ public class OrderInfoController {
         ObjectMapper objectMapper = new ObjectMapper();
         JsonNode jsonNode = new ObjectMapper().readTree(userResponseEntityBody);
         UserDTO userDTO = objectMapper.convertValue(jsonNode.get("data"), UserDTO.class);
-        System.out.println("userDTO = " + userDTO);
+//        System.out.println("userDTO = " + userDTO);
 
 
         //获得regionDTO
@@ -85,12 +84,12 @@ public class OrderInfoController {
         RegionDTO regionDTO = new RegionDTO();
         regionDTO.setCode(pinYin);
         regionDTO.setName(regionDTOString);
-        System.out.println("regionDTO = " + regionDTO);
+//        System.out.println("regionDTO = " + regionDTO);
 
 
         //获得List<TradeProductConfigDTO>集合
         TradeProductConfig tradeProductConfig = tradeProductConfigService.selectByOrderId(id);
-        System.out.println("tradeProductConfig = " + tradeProductConfig);
+//        System.out.println("tradeProductConfig = " + tradeProductConfig);
         /**
          * 为了得到List<TradeProductConfigDTO>集合，先把tradeProductConfig映射成json字符串
          * 然后再把json字符串映射成TradeProductConfigDTO
@@ -98,7 +97,7 @@ public class OrderInfoController {
          */
         ObjectMapper objectMapper1 = new ObjectMapper();
         String tradeProductConfigJson = objectMapper1.writeValueAsString(tradeProductConfig);
-        System.out.println("tradeProductConfigJson = " + tradeProductConfigJson);
+//        System.out.println("tradeProductConfigJson = " + tradeProductConfigJson);
         TradeProductConfigDTO tradeProductConfigDTO = objectMapper1.readValue(tradeProductConfigJson, TradeProductConfigDTO.class);
         ArrayList<TradeProductConfigDTO> tradeProductConfigDTOList = new ArrayList<>();
         tradeProductConfigDTOList.add(tradeProductConfigDTO);
@@ -113,17 +112,14 @@ public class OrderInfoController {
         tradeResultDTO.setRegion(regionDTO);
         tradeResultDTO.setConfigs(tradeProductConfigDTOList);
 
-        System.out.println("tradeResultDTO = " + tradeResultDTO);
+//        System.out.println("tradeResultDTO = " + tradeResultDTO);
         ObjectMapper objectMapper2 = new ObjectMapper();
         String tradeResultDTOJson = objectMapper2.writeValueAsString(tradeResultDTO);
-        System.out.println("tradeResultDTOJson = " + tradeResultDTOJson);
+//        System.out.println("tradeResultDTOJson = " + tradeResultDTOJson);
 
 
         //这里把从数据库查的id,priceValue,configs和从第三方接口查的id,priceValue封装成TradeResultDTO
         // 再封装成ResponseEntity然后返回
-        HttpStatus status = HttpStatus.OK;
-//        ResponseEntity<TradeResultDTO> responseEntity = new ResponseEntity<>(tradeResultDTO, status);
         return ResponseEntity.ok(tradeResultDTO);
-//        return responseEntity;
     }
 }
