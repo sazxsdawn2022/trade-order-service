@@ -63,3 +63,17 @@
 #### 注意
 * gateway中loadLalancing，发送HttpMethod.GET请求，与tradeOrderInfo区分开
 
+### 订单优惠券抵扣公摊
+
+#### 描述
+* 先根据orderId从数据库从查出订单，将order中的价格减去优惠劵的价格计算后，插入到优惠劵表
+
+### 漏桶限流算法
+
+#### 描述
+使用lua脚本加redis实现
+
+### 链路跟踪
+
+#### 描述
+* 在gateway发送到api时设置requestId设置到header，然后转发至到api中
