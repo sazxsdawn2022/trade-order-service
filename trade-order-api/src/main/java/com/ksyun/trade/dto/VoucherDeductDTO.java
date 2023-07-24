@@ -1,11 +1,12 @@
 package com.ksyun.trade.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Data;
 
 import java.math.BigDecimal;
-import java.util.Date;
 
 @Data
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class VoucherDeductDTO {
 
     private Integer orderId;
@@ -13,5 +14,4 @@ public class VoucherDeductDTO {
     private BigDecimal amount;
     private BigDecimal beforeDeductAmount;
     private BigDecimal afterDeductAmount;
-
 }

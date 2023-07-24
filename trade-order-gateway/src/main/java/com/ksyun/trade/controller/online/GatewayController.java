@@ -1,5 +1,6 @@
 package com.ksyun.trade.controller.online;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.ksyun.req.trace.RequestTraceContextSlf4jMDCHolder;
 import com.ksyun.trade.dto.VoucherDeductDTO;
 import com.ksyun.trade.service.GatewayService;
@@ -43,8 +44,8 @@ public class GatewayController {
      * 订单优惠券抵扣 (POST json)
      */
     @RequestMapping(value = "/online/voucher/deduct", produces = "application/json")
-    public Object deduct(@RequestBody VoucherDeductDTO param, HttpServletRequest request) {
-        return gatewayService.loadLalancing(param, request);
+    public Object deduct(@RequestBody VoucherDeductDTO param, HttpServletRequest request) throws JsonProcessingException {
+        return gatewayService.voucherDeduct(param, request);
     }
 
     /**

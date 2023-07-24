@@ -14,5 +14,14 @@
         <result column="update_time" property="updateTime" />
     </resultMap>
 
+    <!-- 定义查询语句，使用 resultMap 映射查询结果 -->
+    <select id="selectByOrderIdAndVoucherNo"
+            resultMap="BaseResultMap"
+            parameterType="map">
+        SELECT * FROM ksc_voucher_deduct
+        WHERE order_id = #{orderId}
+          AND voucher_no = #{voucherNo}
+    </select>
+
 
 </mapper>
