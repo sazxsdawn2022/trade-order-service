@@ -31,4 +31,11 @@ spring:
 meta:
   url: http://campus-test.meta.ksyun.com:8090
 
+#mybatis-plus配置
+mybatis-plus:
+  #配置mapper.xml映射文件
+  mapper-locations: classpath*:/mapper/*Mapper.xml
+  #配置mybatis数据返回类型别名
+  type-aliases-package: com.ksyun.trade.pojo
+
 
