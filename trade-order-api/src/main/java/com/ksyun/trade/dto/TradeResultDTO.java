@@ -10,8 +10,8 @@ import java.util.List;
 public class TradeResultDTO implements Serializable {
     private static final long serialVersionUID = 1L;
 
-    //加一个upstream
-    private String upstream;
+    //加一个upsteam
+    private String upsteam;
 
     /**
      * 订单id

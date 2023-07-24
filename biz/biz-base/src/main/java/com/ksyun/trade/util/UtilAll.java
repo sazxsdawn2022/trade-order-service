@@ -8,6 +8,7 @@ import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
 /**
+ * 工具类，处理时间、字符串和日志等操作
  * @author ksc
  */
 public class UtilAll {
@@ -15,6 +16,7 @@ public class UtilAll {
 
     }
 
+    //获取日志中的 Trace ID
     public static String getTraceId() {
         String traceId = MDC.get(TraceUtils.TRACE_ID);
         return StringUtils.isBlank(traceId) ? StringUtils.EMPTY : traceId;

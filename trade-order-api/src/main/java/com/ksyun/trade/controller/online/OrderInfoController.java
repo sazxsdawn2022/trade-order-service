@@ -9,6 +9,10 @@ import com.ksyun.trade.dto.TradeResultDTO;
 import com.ksyun.trade.dto.UserDTO;
 import com.ksyun.trade.pojo.TradeOrder;
 import com.ksyun.trade.pojo.TradeProductConfig;
+import com.ksyun.trade.redisutils.MemoryCache;
+import com.ksyun.trade.redisutils.RedisCache;
+import com.ksyun.trade.redisutils.RedisUtils;
+import com.ksyun.trade.redisutils.TwoLevelCache;
 import com.ksyun.trade.rest.RestResult;
 import com.ksyun.trade.service.TradeOrderService;
 import com.ksyun.trade.service.TradeProductConfigService;
@@ -25,6 +29,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 @RestController
@@ -41,20 +46,28 @@ public class OrderInfoController {
     @Resource
     private TradeProductConfigService tradeProductConfigService;
 
+    @Resource
+    private RedisUtils redisUtils;
+
+    private TwoLevelCache<String, Object> twoLevelCache;
+
     @RequestMapping("/queryOrderInfo")
     public RestResult query(@RequestParam(value = "id") Integer id, HttpServletRequest request) throws IOException {
 
-        Map<String, String> traceHeaders = RequestTraceContextSlf4jMDCHolder.getTraceHeaders();
-        String requestId = RequestTraceContextSlf4jMDCHolder.getRequestId();
-        System.out.println("api controller requestId = " + requestId);
-        System.out.println("api controller traceHeaders = " + traceHeaders);
-
-//        String requestId = RequestTraceContextSlf4jMDCHolder.getRequestId();
-//        System.out.println("requestId = " + requestId);
-
-
         //获取gateway传来的upstream参数
         String upstream = request.getParameter("upstream");
+
+        //如果缓存中有，就直接
+        if (twoLevelCache != null) {
+            TradeResultDTO tradeResultDTO = (TradeResultDTO) twoLevelCache.get("tradeResultDTO");
+            if (tradeResultDTO != null) {
+                tradeResultDTO.setUpsteam(upstream);
+                return RestResult.success().data(tradeResultDTO);
+            }
+        }
+
+
+
 
 
         TradeOrder tradeOrder = tradeOrderService.getById(id);
@@ -83,21 +96,25 @@ public class OrderInfoController {
 
 
         //获得regionDTO
-        //从第三方接口获取regionResponseEntityBody中的data
-        targetUrl = "http://campus.meta.ksyun.com:8090/online/region/name/" + regionId;
-        ResponseEntity<String> regionResponseEntity = restTemplate.exchange(targetUrl, HttpMethod.GET, requestEntity, String.class);
-        String regionResponseEntityBody = regionResponseEntity.getBody();
-//        System.out.println("regionResponseEntityBody = " + regionResponseEntityBody);
-        JsonNode jsonNode1 = new ObjectMapper().readTree(regionResponseEntityBody);
-        String regionDTOString = jsonNode1.get("data").asText();
-//        System.out.println("regionDTOString = " + regionDTOString);
-        //把汉字转换成拼音
-        String pinYin = PinyinUtils.getPinYin(regionDTOString);
         RegionDTO regionDTO = new RegionDTO();
-        regionDTO.setCode(pinYin);
-        regionDTO.setName(regionDTOString);
-//        System.out.println("regionDTO = " + regionDTO);
+        targetUrl = "http://campus.meta.ksyun.com:8090/online/region/list";
+        ResponseEntity<String> exchange = restTemplate.exchange(targetUrl, HttpMethod.GET, requestEntity, String.class);
+        String body = exchange.getBody();
+        RestResult restResult = new ObjectMapper().readValue(body, RestResult.class);
+        ArrayList data = (ArrayList) restResult.getData();
+//        System.out.println("data = " + data);
+//        System.out.println("data.getClass() = " + data.getClass()); //ArrayList
+        // [{id=1, code=Beijing, name=北京, status=1}, {id=2, code=Shanghai, name=上海, status=1},
+        for (int i = 0; i < data.size(); i++) {
+            LinkedHashMap o = (LinkedHashMap) data.get(i);
+            if (o.get("id").equals(regionId)) {
+                regionDTO.setCode((String) o.get("code"));
+                regionDTO.setName((String) o.get("name"));
+            }
+            Object o1 = o.get(regionId);
 
+
+        }
 
         //获得List<TradeProductConfigDTO>集合
         TradeProductConfig tradeProductConfig = tradeProductConfigService.selectByOrderId(id);
@@ -117,22 +134,28 @@ public class OrderInfoController {
 
         //TradeResultDTO需要的属性都获取完毕，接下来封装成TradeResultDTO然后当作data包装进ResponseEntity返回结构
         TradeResultDTO tradeResultDTO = new TradeResultDTO();
-        tradeResultDTO.setUpstream(upstream);
+        tradeResultDTO.setUpsteam(upstream);
         tradeResultDTO.setId(id);
         tradeResultDTO.setPriceValue(priceValue);
         tradeResultDTO.setUser(userDTO);
         tradeResultDTO.setRegion(regionDTO);
         tradeResultDTO.setConfigs(tradeProductConfigDTOList);
 
-//        System.out.println("tradeResultDTO = " + tradeResultDTO);
-        ObjectMapper objectMapper2 = new ObjectMapper();
-        String tradeResultDTOJson = objectMapper2.writeValueAsString(tradeResultDTO);
-//        System.out.println("tradeResultDTOJson = " + tradeResultDTOJson);
+////        System.out.println("tradeResultDTO = " + tradeResultDTO);
+//        ObjectMapper objectMapper2 = new ObjectMapper();
+//        String tradeResultDTOJson = objectMapper2.writeValueAsString(tradeResultDTO);
+////        System.out.println("tradeResultDTOJson = " + tradeResultDTOJson);
+
+
+        //把tradeResultDTO放到二级缓存中
+        RedisCache<String, Object> secondLevelCache = new RedisCache<>(redisUtils);
+        MemoryCache<String, Object> firstLevelCache = new MemoryCache<>(1000, 60 * 1000);
+        twoLevelCache = new TwoLevelCache<>(firstLevelCache, secondLevelCache);
+        twoLevelCache.put("tradeResultDTO", tradeResultDTO);
 
 
         //这里把从数据库查的id,priceValue,configs和从第三方接口查的id,priceValue封装成TradeResultDTO
         // 再封装成ResponseEntity然后返回
-//        return ResponseEntity.ok(tradeResultDTO);
         return RestResult.success().data(tradeResultDTO);
     }
 }

@@ -32,6 +32,8 @@ import java.util.Map;
 
 /**
  * Controller层日志打印.
+ *在被@RequestMapping注解标记的方法执行前后执行，记录该方法的执行时间和请求的详细信息
+ * 在方法执行过程中，如果返回结果是RestResult类型，则会将请求ID（requestId）和响应时间添加到响应对象中。
  *
  * @author ksc
  */
