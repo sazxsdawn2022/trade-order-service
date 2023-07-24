@@ -1,8 +1,11 @@
 package com.ksyun.trade.service;
 
+import com.ksyun.req.trace.ReqTraceConsts;
+import com.ksyun.req.trace.RequestTraceContextSlf4jMDCHolder;
 import com.ksyun.trade.dto.TradeResultDTO;
 import com.ksyun.trade.rest.RestResult;
 import com.sun.webkit.network.URLs;
+import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Controller;
@@ -33,11 +36,17 @@ public class GatewayService {
 
     public Object loadLalancing(Object param, HttpServletRequest request) {
 
+        Map<String, String> traceHeaders = RequestTraceContextSlf4jMDCHolder.getTraceHeaders();
+        String requestId = RequestTraceContextSlf4jMDCHolder.getRequestId();
+        System.out.println("gateway service requestId = " + requestId);
+        System.out.println("gateway service traceHeaders = " + traceHeaders);
+
         String paramName = "";
 
         // 1. 模拟路由 (轮询) 获取接口
         URLs = urls.split(",");
-        String desHost = round();
+//        String desHost = round();
+        String desHost =  round();
         String requestURI = request.getRequestURI();  //  /online/queryRegionName
         //获取url参数名
         Enumeration<String> parameterNames = request.getParameterNames();
@@ -76,18 +85,20 @@ public class GatewayService {
         if(requestURI.contains("queryOrderInfo")){
             headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
             headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
+            headers.add(ReqTraceConsts.REQUEST_ID, requestId);
             HttpEntity<MultiValueMap<String, String>> requestEntity = new HttpEntity<>(params, headers);
-            ResponseEntity<TradeResultDTO> responseEntity = restTemplate.exchange(targetUrl, HttpMethod.POST, requestEntity, TradeResultDTO.class);
-            TradeResultDTO body = responseEntity.getBody();
-            return RestResult.success().data(body);
+            ResponseEntity<String> responseEntity = restTemplate.exchange(targetUrl, HttpMethod.POST, requestEntity, String.class);
+
+            return responseEntity.getBody();
 
         } else {
             headers.setContentType(MediaType.APPLICATION_JSON);
+            headers.add(ReqTraceConsts.REQUEST_ID, requestId);
             HttpEntity<MultiValueMap<String, String>> requestEntity = new HttpEntity<>(headers);
-            ResponseEntity responseEntity = restTemplate.exchange(targetUrl, HttpMethod.POST, requestEntity, String.class);
+            ResponseEntity<String> responseEntity = restTemplate.exchange(targetUrl, HttpMethod.GET, requestEntity, String.class);
             Object body = responseEntity.getBody();
 
-            return RestResult.success().data(body);
+            return body;
         }
 
 

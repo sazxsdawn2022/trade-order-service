@@ -2,12 +2,14 @@ package com.ksyun.trade.controller.online;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.ksyun.req.trace.RequestTraceContextSlf4jMDCHolder;
 import com.ksyun.trade.dto.RegionDTO;
 import com.ksyun.trade.dto.TradeProductConfigDTO;
 import com.ksyun.trade.dto.TradeResultDTO;
 import com.ksyun.trade.dto.UserDTO;
 import com.ksyun.trade.pojo.TradeOrder;
 import com.ksyun.trade.pojo.TradeProductConfig;
+import com.ksyun.trade.rest.RestResult;
 import com.ksyun.trade.service.TradeOrderService;
 import com.ksyun.trade.service.TradeProductConfigService;
 import com.ksyun.trade.util.PinyinUtils;
@@ -23,6 +25,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Map;
 
 @RestController
 @RequestMapping(value = "/online", produces = {MediaType.APPLICATION_JSON_VALUE})
@@ -39,7 +42,16 @@ public class OrderInfoController {
     private TradeProductConfigService tradeProductConfigService;
 
     @RequestMapping("/queryOrderInfo")
-    public ResponseEntity query(@RequestParam(value = "id") Integer id, HttpServletRequest request) throws IOException {
+    public RestResult query(@RequestParam(value = "id") Integer id, HttpServletRequest request) throws IOException {
+
+        Map<String, String> traceHeaders = RequestTraceContextSlf4jMDCHolder.getTraceHeaders();
+        String requestId = RequestTraceContextSlf4jMDCHolder.getRequestId();
+        System.out.println("api controller requestId = " + requestId);
+        System.out.println("api controller traceHeaders = " + traceHeaders);
+
+//        String requestId = RequestTraceContextSlf4jMDCHolder.getRequestId();
+//        System.out.println("requestId = " + requestId);
+
 
         //获取gateway传来的upstream参数
         String upstream = request.getParameter("upstream");
@@ -120,6 +132,7 @@ public class OrderInfoController {
 
         //这里把从数据库查的id,priceValue,configs和从第三方接口查的id,priceValue封装成TradeResultDTO
         // 再封装成ResponseEntity然后返回
-        return ResponseEntity.ok(tradeResultDTO);
+//        return ResponseEntity.ok(tradeResultDTO);
+        return RestResult.success().data(tradeResultDTO);
     }
 }

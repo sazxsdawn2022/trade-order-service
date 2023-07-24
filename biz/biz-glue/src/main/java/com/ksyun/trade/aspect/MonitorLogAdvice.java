@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 /**
+ * 日志的作用，打印添加@MonitorLog注解的方法的执行时间
  * @author ksc
  */
 @Component

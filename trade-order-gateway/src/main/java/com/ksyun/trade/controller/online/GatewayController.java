@@ -1,5 +1,6 @@
 package com.ksyun.trade.controller.online;
 
+import com.ksyun.req.trace.RequestTraceContextSlf4jMDCHolder;
 import com.ksyun.trade.dto.VoucherDeductDTO;
 import com.ksyun.trade.service.GatewayService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.Map;
 
 @RestController
 public class GatewayController {
@@ -20,6 +22,12 @@ public class GatewayController {
      */
     @RequestMapping(value = "/online/queryOrderInfo", produces = "application/json")
     public Object queryOrderInfo(@RequestParam(value = "id") Integer id, HttpServletRequest request) {
+
+        Map<String, String> traceHeaders = RequestTraceContextSlf4jMDCHolder.getTraceHeaders();
+        String requestId = RequestTraceContextSlf4jMDCHolder.getRequestId();
+        System.out.println("gateway controller requestId = " + requestId);
+        System.out.println("gateway controller traceHeaders = " + traceHeaders);
+
         return gatewayService.loadLalancing(id, request);
     }
 
@@ -34,10 +42,10 @@ public class GatewayController {
     /**
      * 订单优惠券抵扣 (POST json)
      */
-//    @RequestMapping(value = "/online/deduct", produces = "application/json")
-//    public Object deduct(@RequestBody VoucherDeductDTO param) {
-//        return gatewayService.loadLalancing(param);
-//    }
+    @RequestMapping(value = "/online/voucher/deduct", produces = "application/json")
+    public Object deduct(@RequestBody VoucherDeductDTO param, HttpServletRequest request) {
+        return gatewayService.loadLalancing(param, request);
+    }
 
     /**
      * 基于Redis实现漏桶限流算法，并在API调用上体现
