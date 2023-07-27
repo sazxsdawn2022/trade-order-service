@@ -71,7 +71,32 @@
 ### 漏桶限流算法
 
 #### 描述
-使用lua脚本加redis实现
+使用lua脚本加redis实现 
+##### 主要实现类是RedisRateLimiter，主要用于限制接口的访问速度，防止系统被过度请求压垮。该类使用了Redis来存储漏桶的当前水量，并通过Lua脚本实现了限流的具体逻辑。
+
+* 下面是该类中各个成员变量和方法的详细解释：
+  - REDIS_KEY_PREFIX：Redis中存储漏桶当前水量的键值前缀，用于避免不同接口之间使用同一个键值而产生冲突。
+  - DEFAULT_LIMIT：默认的QPS限制，即每秒最多处理多少个请求。
+  - DEFAULT_CAPACITY：默认的漏桶容量，即漏桶最多能存储多少个请求。
+  - SCRIPT：使用Lua脚本实现的限流逻辑，通过Redis的eval命令执行。
+  - jedis：Redis连接对象，用于连接Redis服务器。
+  - limit：QPS限制，即每秒最多处理多少个请求。
+  - capacity：漏桶容量，即漏桶最多能存储多少个请求。
+  - key：Redis中存储漏桶当前水量的键值，由REDIS_KEY_PREFIX和API地址组合而成。
+  - RedisRateLimiter(Jedis jedis, String apiPath)：构造函数，用于创建RedisRateLimiter对象，并初始化jedis、limit、capacity和key等属性。其中apiPath参数表示当前接口的地址。
+  - RedisRateLimiter(Jedis jedis, String apiPath, int limit, int capacity)：构造函数，用于创建RedisRateLimiter对象，并初始化jedis、limit、capacity和key等属性。同时，该构造函数还支持自定义漏桶容量和QPS限制。
+  - acquire()：请求限流处理方法，用于判断当前请求是否被限流。该方法通过执行Lua脚本来实现漏桶限流算法，如果当前请求未被限流，则返回true，否则返回false。
+* 在listUpstreamController中生成RedisRateLimiter对象，这里使用RedisRateLimiter(Jedis jedis, String apiPath)构造器来初始化对象，并通过调用acquire()方法来进行限流处理。如果当前请求未被限流，则可以继续进行下一步操作；否则，需要等待一段时间后再次尝试请求，以保证系统的稳定性和安全性。
+* lua脚本
+  - local key = KEYS[1]：将传入的第一个参数(KEYS[1])赋值给变量key，用于表示Redis中存储漏桶当前水量的键值。
+  - local limit = tonumber(ARGV[1])：将传入的第二个参数(ARGV[1])转换为数字类型，并赋值给变量limit，表示当前接口的QPS限制。
+  - local capacity = tonumber(ARGV[2])：将传入的第三个参数(ARGV[2])转换为数字类型，并赋值给变量capacity，表示漏桶的容量。
+  - local current = tonumber(redis.call('get', key) or '0')：从Redis中读取漏桶的当前水量，并将其转换为数字类型赋值给变量current。如果Redis中不存在该键值，则将current赋值为0。
+  - if current + 1 > limit then ... else ... end：根据当前水量和QPS限制，判断当前请求是否被限流。如果当前请求未被限流，则将漏桶的水量加1，并设置漏桶的过期时间。如果当前请求被限流，则直接返回0，表示请求被拒绝。
+  - redis.call('INCRBY', key, 1)：将漏桶的水量加1。
+  - redis.call('expire', key, capacity)：设置漏桶的过期时间，保证漏桶的容量不会超过设定值。
+  - return 1：返回1，表示当前请求未被限流。
+* 通过Redis的原子性操作保证了多个请求同时到来时漏桶限流算法的正确性。脚本中还设置了漏桶的容量和过期时间，保证了系统的稳定性和安全性。
 
 ### 链路跟踪
 
